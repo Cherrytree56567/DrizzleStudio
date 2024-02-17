@@ -1,0 +1,14 @@
+{
+  "project": "MyProject",
+  "root": {
+    "name": "MyProject",
+    "type": "directory",
+    "children": [
+      {
+        "name": "DS.cpp",
+	"path": "",
+        "type": "file"
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+﻿  DrizzleStudio.cpp
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(222,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(240,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(118,13): warning C4101: 'font': unreferenced local variable
+  DrizzleStudio.vcxproj -> C:\Users\ronit\Desktop\DrizzleStudio\x64\Debug\DrizzleStudio.exe

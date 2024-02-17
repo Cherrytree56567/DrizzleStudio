@@ -1,0 +1,28 @@
+{
+  "project": "MyProject",
+  "script": "wsl g++ DS.cpp && wsl ./a.out",
+  "root": {
+    "name": "MyProject",
+    "path": "",
+    "type": "directory",
+    "children": [
+      {
+        "name": "DS.cpp",
+	"path": "",
+        "type": "file"
+      },
+      {
+        "name": "vendor",
+	"path": "",
+        "type": "directory",
+        "children": [
+      		{
+        	"name": "project.json",
+		"path": "vendor",
+        	"type": "file"
+      		}
+	]
+      }
+    ]
+  }
+}
