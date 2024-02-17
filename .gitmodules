@@ -1,0 +1,6 @@
+[submodule "DrizzleStudio/vendor/imgui"]
+	path = DrizzleStudio/vendor/imgui
+	url = https://github.com/ocornut/imgui
+[submodule "DrizzleStudio/vendor/ImGuiFileDialog"]
+	path = DrizzleStudio/vendor/ImGuiFileDialog
+	url = https://github.com/aiekick/ImGuiFileDialog
