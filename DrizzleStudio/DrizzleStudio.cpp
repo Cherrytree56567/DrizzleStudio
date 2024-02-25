@@ -177,6 +177,11 @@ int main(int argc, char* argv[]) {
                         ofs << text;
                         ofs.close();
                     }
+                    else {
+                        std::ofstream ofs(filePathName, std::ofstream::trunc); // Construct the full file path
+                        ofs << text;
+                        ofs.close();
+                    }
                 }
                 if (ImGui::MenuItem("Compile", "F5")) {
                     std::string a = "cmake . -B build && cmake --build build --config Release";
@@ -243,8 +248,8 @@ int main(int argc, char* argv[]) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
-        ImGui::SetNextWindowSize(ImVec2(300, 700-24), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(width - 300, 44), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(300, 700), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(width - 300, 20), ImGuiCond_Once);
         ImGui::Begin("Project Explorer");
         std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> hs = DisplayTreeNode(root);
         if (hs.first != "") {
@@ -254,8 +259,8 @@ int main(int argc, char* argv[]) {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowSize(ImVec2(980, 500 - 24), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(0, 44), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(980, 500), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
 
         ImGui::Begin("Text Editor");
         if (ImGui::InputTextMultiline("##textinput", &text, ImVec2(ImGui::GetWindowSize()[0], ImGui::GetWindowSize()[1] - 35))) {

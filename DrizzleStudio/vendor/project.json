@@ -1,14 +1,14 @@
 {
-  "project": "MyProject",
+  "project": "MyProfdsject",
   "root": {
     "name": "MyProject",
     "type": "directory",
     "children": [
       {
         "name": "DS.cpp",
-	"path": "",
+	"path"
         "type": "file"
-      }
+    
     ]
   }
 }

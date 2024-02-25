@@ -1,7 +1,5 @@
 ﻿  DrizzleStudio.cpp
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(247,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(266,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(252,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(271,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
 C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(138,13): warning C4101: 'font': unreferenced local variable
-  imgui_stdlib.cpp
-  Generating Code...
   DrizzleStudio.vcxproj -> C:\Users\ronit\Desktop\DrizzleStudio\x64\Debug\DrizzleStudio.exe
