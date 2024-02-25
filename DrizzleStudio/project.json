@@ -1,6 +1,5 @@
 {
   "project": "MyProject",
-  "script": "wsl g++ DS.cpp && wsl ./a.out",
   "root": {
     "name": "MyProject",
     "path": "",

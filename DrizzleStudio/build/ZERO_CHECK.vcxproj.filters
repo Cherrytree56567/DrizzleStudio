@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\build\CMakeFiles\7b087078e598e2754dd66b3d7409913b\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{8B208DB3-EDE1-32A4-A168-B1796F10AE19}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

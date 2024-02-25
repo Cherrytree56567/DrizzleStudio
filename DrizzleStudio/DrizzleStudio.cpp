@@ -12,6 +12,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "json.hpp"
+#include "imguitoolbar.h"
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb/stb_image.h"
+#include <future>
 
 // Migrate to Drizzle3D
 
@@ -67,12 +71,21 @@ void ParseJSON(const json& nodeData, TreeNode& treeNode, const std::string& base
     }
 }
 
-std::string DisplayTreeNode(TreeNode& node) {
+std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> DisplayTreeNode(TreeNode& node) {
     std::string content;
+    std::string filePath = "";
+    std::string fileNamea;
+    bool bol = false;
     if (node.type == DIRECTORY_NODE) {
         if (ImGui::TreeNode(node.name.c_str())) {
             for (auto& child : node.children) {
-                content += DisplayTreeNode(*child);
+                std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> h = DisplayTreeNode(*child);
+                content += h.first;
+                bol = h.second.second.second;
+                if (bol) {
+                    filePath = h.second.first;
+                    fileNamea = h.second.second.first;
+                }
             }
             ImGui::TreePop();
         }
@@ -80,8 +93,11 @@ std::string DisplayTreeNode(TreeNode& node) {
     else {
         if (ImGui::Selectable(node.name.c_str())) {
             std::string fileName = node.name;
-            if (node.path != "")
+            fileNamea = node.name;
+            if (node.path != "") {
                 fileName = node.path + "\\" + node.name;
+                filePath = node.path;
+            }
             std::string fileContent;
             std::ifstream file(fileName);
             std::string line;
@@ -89,26 +105,31 @@ std::string DisplayTreeNode(TreeNode& node) {
                 fileContent += line + "\n";
             }
             content = fileContent;
+            bol = true;
         }
     }
-    return content;
+    return { content, {filePath, {fileNamea, bol} } };
 }
 
-std::string executeCommand(const char* cmd) {
-    std::ostringstream stream;
-    FILE* pipe = _popen(cmd, "r");
+void executeCommand(const std::string& command, std::string& s, std::atomic<bool>& h) {
+    std::ostringstream output;
+    FILE* pipe = _popen(command.c_str(), "r");
     if (!pipe) {
-        throw std::runtime_error("_popen() failed!");
+        std::cerr << "POPEN Failed!";
     }
     char buffer[128];
-    while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-        stream << buffer;
+    while (!feof(pipe)) {
+        if (fgets(buffer, 128, pipe) != NULL)
+            output << buffer;
     }
     _pclose(pipe);
-    return stream.str();
+    s = output.str();
+    h.store(true);
 }
 
 int main(int argc, char* argv[]) {
+    std::thread t;
+    std::atomic<bool> done(false);
     std::ifstream file("project.json");
     json fileTreeJson;
     file >> fileTreeJson;
@@ -160,8 +181,13 @@ int main(int argc, char* argv[]) {
                     }
                 }
                 if (ImGui::MenuItem("Compile", "F5")) {
-                    std::cout << "Executing Command" << ((std::string)fileTreeJson["script"]).c_str() << "\n";
-                    output = executeCommand(((std::string)fileTreeJson["script"]).c_str());
+                    std::string a = "cmake . -B build && cmake --build build --config Release";
+                    if (fileTreeJson.contains("script")) {
+                        a = ((std::string)fileTreeJson["script"]).c_str();
+                    }
+                    t = std::thread(executeCommand, a, std::ref(output), std::ref(done));
+                    
+                    //output = future.get();
                     //exit(0);
                 }
 
@@ -191,6 +217,7 @@ int main(int argc, char* argv[]) {
             }
             ImGui::EndMainMenuBar();
         }
+
         ImGui::SetNextWindowSize(ImVec2(500, 300), ImGuiCond_Once);
         if (fileDialog.Display("ChooseFileDlg")) {
             if (fileDialog.IsOk()) {
@@ -218,18 +245,19 @@ int main(int argc, char* argv[]) {
         int width, height;
         glfwGetWindowSize(window, &width, &height);
 
-        ImGui::SetNextWindowSize(ImVec2(300, 700), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(width - 300, 20), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(300, 700-24), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(width - 300, 44), ImGuiCond_Once);
         ImGui::Begin("Project Explorer");
-        std::string hs = DisplayTreeNode(root);
-        if (hs != "") {
-            text = hs;
-            // TODO: CHANGE FILENAME AND PATH VARS
+        std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> hs = DisplayTreeNode(root);
+        if (hs.first != "") {
+            text = hs.first;
+            filePath = hs.second.first;
+            filePathName = hs.second.second.first;
         }
         ImGui::End();
 
-        ImGui::SetNextWindowSize(ImVec2(980, 500), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(980, 500 - 24), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(0, 44), ImGuiCond_Once);
 
         ImGui::Begin("Text Editor");
         if (ImGui::InputTextMultiline("##textinput", &text, ImVec2(ImGui::GetWindowSize()[0], ImGui::GetWindowSize()[1] - 35))) {
@@ -238,7 +266,7 @@ int main(int argc, char* argv[]) {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(0, height - 200), ImGuiCond_Once);
-        ImGui::SetNextWindowSize(ImVec2(980, 200), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(980, 224), ImGuiCond_Once);
         ImGui::Begin("Output");
         ImGui::TextUnformatted(output.c_str());
         ImGui::End();
@@ -246,10 +274,12 @@ int main(int argc, char* argv[]) {
         if (settingsOpen) {
             // TODO: Center in Middle and Size to Good size.
             ImGui::Begin("Settings", &settingsOpen);
-            ImGui::ColorEdit3("Text Color", (float*)&textColor);
             ImGui::ColorEdit3("Background Color", (float*)&bgColor);
             ImGui::End();
         }
+
+        if (t.joinable() && done.load())
+            t.join();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

@@ -1,0 +1,10 @@
+^C:\USERS\RONIT\DESKTOP\DRIZZLESTUDIO\DRIZZLESTUDIO\BUILD\CMAKEFILES\7B087078E598E2754DD66B3D7409913B\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/ronit/Desktop/DrizzleStudio/DrizzleStudio -BC:/Users/ronit/Desktop/DrizzleStudio/DrizzleStudio/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/ronit/Desktop/DrizzleStudio/DrizzleStudio/build/MyProject.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
