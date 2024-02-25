@@ -12,7 +12,6 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "json.hpp"
-#include "imguitoolbar.h"
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #include <future>
@@ -157,8 +156,7 @@ int main(int argc, char* argv[]) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
-    //ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    // TODO: FIX SAVING ISSUE
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);
