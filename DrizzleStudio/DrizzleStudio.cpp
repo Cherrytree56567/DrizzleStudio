@@ -156,7 +156,7 @@ int main(int argc, char* argv[]) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    //ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         glClearColor(bgColor.x, bgColor.y, bgColor.z, bgColor.w);

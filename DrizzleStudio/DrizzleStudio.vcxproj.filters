@@ -89,8 +89,5 @@
     <ClInclude Include="json.hpp">
       <Filter>Source Files\vendor</Filter>
     </ClInclude>
-    <ClInclude Include="vendor\imgui\imguitoolbar.h">
-      <Filter>Source Files\vendor</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

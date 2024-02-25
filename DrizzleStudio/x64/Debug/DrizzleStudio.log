@@ -1,11 +1,7 @@
 ﻿  DrizzleStudio.cpp
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\vendor\imgui\imguitoolbar.h(307,84): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'DrizzleStudio.cpp')
-  
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\vendor\imgui\imguitoolbar.h(308,96): warning C4267: 'argument': conversion from 'size_t' to 'int', possible loss of data
-  (compiling source file 'DrizzleStudio.cpp')
-  
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(249,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(268,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(139,13): warning C4101: 'font': unreferenced local variable
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(247,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(266,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\ronit\Desktop\DrizzleStudio\DrizzleStudio\DrizzleStudio.cpp(138,13): warning C4101: 'font': unreferenced local variable
+  imgui_stdlib.cpp
+  Generating Code...
   DrizzleStudio.vcxproj -> C:\Users\ronit\Desktop\DrizzleStudio\x64\Debug\DrizzleStudio.exe
