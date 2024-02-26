@@ -29,6 +29,7 @@ enum NodeType {
 struct TreeNode {
     std::string path;
     std::string name;
+    std::string PJName;
     NodeType type;
     std::vector<TreeNode*> children;
 
@@ -47,28 +48,26 @@ struct TreeNode {
     }
 };
 
-void ParseJSON(const json& nodeData, TreeNode& treeNode, const std::string& basePath) {
-    if (nodeData.contains("name") && nodeData.contains("type")) {
-        treeNode.name = nodeData["name"];
-        std::string type = nodeData["type"];
-        std::cout << "Parsing node: " << treeNode.name << ", Type: " << type << std::endl;
-        if (type == "directory") {
-            treeNode.type = DIRECTORY_NODE;
-            if (nodeData.contains("children")) {
-                for (const auto& child : nodeData["children"]) {
-                    std::string childName = child["name"];
-                    std::string childPath = basePath + "/" + childName;
-                    TreeNode* childNode = new TreeNode(childName, basePath, NodeType::DIRECTORY_NODE);
-                    treeNode.children.push_back(childNode);
-                    ParseJSON(child, *childNode, childPath);
-                }
+void ParseJSON(TreeNode& treeNode, const std::string& basePath, const std::string& ProjectName, bool s = true) {
+    fs::path path(basePath);
+    if (fs::exists(path) && fs::is_directory(path)) {
+        treeNode.name = path.filename().string();
+        treeNode.type = DIRECTORY_NODE;
+        for (const auto& entry : fs::directory_iterator(path)) {
+            TreeNode* childNode = new TreeNode(entry.path().filename().string(), basePath, entry.is_directory() ? DIRECTORY_NODE : FILE_NODE);
+            treeNode.children.push_back(childNode);
+            if (entry.is_directory()) {
+                ParseJSON(*childNode, entry.path().string(), ProjectName, false);
             }
         }
-        else if (type == "file") {
-            treeNode.type = FILE_NODE;
-        }
     }
+    else {
+        std::cerr << "Invalid directory path: " << basePath << std::endl;
+    }
+    if (s)
+        treeNode.PJName = ProjectName;
 }
+
 
 std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> DisplayTreeNode(TreeNode& node) {
     std::string content;
@@ -76,7 +75,11 @@ std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> Dis
     std::string fileNamea;
     bool bol = false;
     if (node.type == DIRECTORY_NODE) {
-        if (ImGui::TreeNode(node.name.c_str())) {
+        std::string s = node.name;
+        if (node.PJName != "") {
+            s = node.PJName;
+        }
+        if (ImGui::TreeNode(s.c_str())) {
             for (auto& child : node.children) {
                 std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> h = DisplayTreeNode(*child);
                 content += h.first;
@@ -127,6 +130,7 @@ void executeCommand(const std::string& command, std::string& s, std::atomic<bool
 }
 
 int main(int argc, char* argv[]) {
+    int widtha, heighta;
     std::thread t;
     std::atomic<bool> done(false);
     std::ifstream file("project.json");
@@ -156,6 +160,7 @@ int main(int argc, char* argv[]) {
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
+    glfwGetWindowSize(window, &widtha, &heighta);
     //ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -242,14 +247,21 @@ int main(int argc, char* argv[]) {
         }
 
         TreeNode root("", "", DIRECTORY_NODE);
-        std::string basePath = fileTreeJson["root"]["path"];
-        ParseJSON(fileTreeJson["root"], root, basePath);
+        std::string basePath = fileTreeJson["root"];
+        ParseJSON(root, basePath, fileTreeJson["project"]);
 
         int width, height;
         glfwGetWindowSize(window, &width, &height);
+        float explorerWidth = static_cast<float>(width) * 0.25f;
 
-        ImGui::SetNextWindowSize(ImVec2(300, 700), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(width - 300, 20), ImGuiCond_Once);
+        if (widtha != width || heighta != height) {
+            ImGui::SetNextWindowSize(ImVec2(explorerWidth, height - 20), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(width - explorerWidth, 20), ImGuiCond_Always);
+        }
+        else {
+            ImGui::SetNextWindowSize(ImVec2(explorerWidth, height - 20), ImGuiCond_Once);
+            ImGui::SetNextWindowPos(ImVec2(width - explorerWidth, 20), ImGuiCond_Once);
+        }
         ImGui::Begin("Project Explorer");
         std::pair<std::string, std::pair<std::string, std::pair<std::string, bool>>> hs = DisplayTreeNode(root);
         if (hs.first != "") {
@@ -259,17 +271,32 @@ int main(int argc, char* argv[]) {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowSize(ImVec2(980, 500), ImGuiCond_Once);
-        ImGui::SetNextWindowPos(ImVec2(0, 20), ImGuiCond_Once);
-
+        float TextEditWidth = static_cast<float>(width) * 0.55f;
+        float TextEditHeight = static_cast<float>(height) * 0.75f;
+        if (widtha != width || heighta != height) {
+            ImGui::SetNextWindowSize(ImVec2(TextEditWidth, TextEditHeight - 20), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(width) * 0.20f, 20), ImGuiCond_Always);
+        }
+        else {
+            ImGui::SetNextWindowSize(ImVec2(TextEditWidth, TextEditHeight - 20), ImGuiCond_Once);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(width) * 0.20f, 20), ImGuiCond_Once);
+        }
         ImGui::Begin("Text Editor");
         if (ImGui::InputTextMultiline("##textinput", &text, ImVec2(ImGui::GetWindowSize()[0], ImGui::GetWindowSize()[1] - 35))) {
             undoStack.push(text);
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(0, height - 200), ImGuiCond_Once);
-        ImGui::SetNextWindowSize(ImVec2(980, 224), ImGuiCond_Once);
+        float OutputWidth = static_cast<float>(width) * 0.55f;
+        float OutputHeight = static_cast<float>(height) * 0.25f;
+        if (widtha != width || heighta != height) {
+            ImGui::SetNextWindowSize(ImVec2(OutputWidth, OutputHeight), ImGuiCond_Always);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(width) * 0.20f, height - OutputHeight), ImGuiCond_Always);
+        }
+        else {
+            ImGui::SetNextWindowSize(ImVec2(OutputWidth, OutputHeight), ImGuiCond_Once);
+            ImGui::SetNextWindowPos(ImVec2(static_cast<float>(width) * 0.20f, height - OutputHeight), ImGuiCond_Once);
+        }
         ImGui::Begin("Output");
         ImGui::TextUnformatted(output.c_str());
         ImGui::End();
@@ -287,6 +314,8 @@ int main(int argc, char* argv[]) {
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
+        widtha = width;
+        heighta = height;
     }
 
     ImGui_ImplOpenGL3_Shutdown();
